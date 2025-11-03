@@ -2,46 +2,46 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven_3_9_6'   // (Use the name of Maven you configured in Jenkins)
-        jdk 'JDK11'           // (Use the name of JDK installed in Jenkins)
+        maven 'Maven3.9'  // make sure the name matches your Maven installation in Jenkins
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                echo 'Pulling code from GitHub...'
-                git branch: 'main', url: 'https://github.com/ayishasuhana8050-wq/CRUD-practice.git'
+                git branch: 'main',
+                    url: 'https://github.com/ayishasuhana8050-wq/JenkinsDemoProject.git'
             }
         }
 
-        stage('Build') {
+        stage('Build Project') {
             steps {
-                echo 'Building Maven Project...'
-                bat 'mvn clean compile'
+                script {
+                    bat 'mvn clean install'
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo 'Running Unit Tests...'
-                bat 'mvn test'
+                script {
+                    bat 'mvn test'
+                }
             }
         }
 
-        stage('Package') {
+        stage('Publish Test Results') {
             steps {
-                echo 'Packaging the Project...'
-                bat 'mvn package'
+                junit '**/target/surefire-reports/*.xml'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build Successful!'
+            echo '✅ Build and Tests Passed Successfully!'
         }
         failure {
-            echo '❌ Build Failed! Check console output for details.'
+            echo '❌ Build or Tests Failed!'
         }
     }
 }
